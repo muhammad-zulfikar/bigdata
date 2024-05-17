@@ -11,4 +11,5 @@ Depends: R (== 3.6.3),
     tm,
     wordcloud,
     ggplot2,
-    dplyr
+    dplyr,
+    tidyr

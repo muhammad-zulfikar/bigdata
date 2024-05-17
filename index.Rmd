@@ -17,7 +17,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 # Load required packages for web scraping, text mining, and visualizing
 library(rvest)
 library(stringr)
@@ -25,6 +25,7 @@ library(tidytext)
 library(tm)
 library(wordcloud)
 library(ggplot2)
+library(tidyr)
 library(dplyr)
 ```
 
@@ -32,13 +33,13 @@ library(dplyr)
 
 ## Specify the base URL of the website
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 base_url <- "https://www.tidytextmining.com"
 ```
 
 ## Read the main webpage and extract links from the table of contents
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 webpage <- read_html(base_url)
 
 toc_links <- webpage %>%
@@ -51,7 +52,7 @@ page_urls <- paste0(base_url, toc_links)
 
 ## Scrape content from each page
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 all_page_content <- list()
 
 for (full_url in page_urls) {
@@ -71,12 +72,11 @@ for (full_url in page_urls) {
 
 ## Combine all scraped content into a single data frame, and count the total words
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 all_content_df <- data.frame(page_url = names(all_page_content), content = unlist(all_page_content))
 
 total_word_count <- sum(nchar(all_content_df$content) - nchar(gsub("\\s+", "", all_content_df$content)))
 
-cat("\n")
 cat("Total word count:", total_word_count, "\n")
 ```
 
@@ -84,7 +84,7 @@ cat("Total word count:", total_word_count, "\n")
 
 ## Clean the corpus and create a term-document matrix
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 corpus <- Corpus(VectorSource(all_content_df$content))
 corpus <- tm_map(corpus, content_transformer(tolower))
 corpus <- tm_map(corpus, removePunctuation)
@@ -102,14 +102,14 @@ valid_words <- grep("^[a-zA-Z]+$", names(word_freq), value = TRUE)
 
 ## Generate word cloud based on filtered word frequencies
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 wordcloud(words = valid_words, freq = word_freq[valid_words], min.freq = 10, 
           random.order = FALSE, colors = brewer.pal(8, "Dark2"))
 ```
 
 ## Create a bar plot for the top N words by frequency
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 top_n <- 10
 top_words <- head(valid_words, n = top_n)
 word_counts <- word_freq[top_words]
@@ -129,7 +129,7 @@ ggplot(bar_data, aes(x = reorder(word, frequency), y = frequency)) +
 
 ## Perform sentiment analysis and visualize results
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 corpus_tokens <- all_content_df %>%
   mutate(content = tolower(content)) %>%
   unnest_tokens(word, content) %>%
@@ -156,7 +156,7 @@ ggplot(top_sentiment_words, aes(x = word, y = sentiment_score, fill = sentiment_
 
 ## Extract bigrams from the corpus and visualize top bigrams
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 bigrams <- corpus_tokens %>%
   filter(!is.na(lead(word))) %>%
   mutate(bigram = paste(word, lead(word), sep = " ")) %>%
