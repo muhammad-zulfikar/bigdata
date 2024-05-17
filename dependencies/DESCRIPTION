@@ -4,4 +4,11 @@ Depends: R (== 3.6.3),
     rmarkdown,
     knitr,
     pander,
-    DT
+    DT,
+    rvest,
+    stringr,
+    tidytext,
+    tm,
+    wordcloud,
+    ggplot2,
+    dplyr
