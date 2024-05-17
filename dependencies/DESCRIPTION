@@ -1,0 +1,7 @@
+Date: 2020-11-01
+Depends: R (== 3.6.3),
+    tidyverse,
+    rmarkdown,
+    knitr,
+    pander,
+    DT
